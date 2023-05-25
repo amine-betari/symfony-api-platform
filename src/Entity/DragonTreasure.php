@@ -13,6 +13,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
 #[ApiResource(
@@ -23,6 +25,12 @@ use ApiPlatform\Metadata\Put;
         new Post(),
         new Put(),
         new Patch(),
+    ],
+    normalizationContext: [
+        'groups' => ['treasure:read'],
+    ],
+    denormalizationContext: [
+        'groups' => ['treasure:write'],
     ]
 )]
 class DragonTreasure
@@ -33,32 +41,38 @@ class DragonTreasure
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['treasure:read', 'treasure:write'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('treasure:read')]
     private ?string $description = null;
 
     /**
      * The estimated value of this treasure, in gold coins.
      */
     #[ORM\Column]
+    #[Groups(['treasure:read', 'treasure:write'])]
     private ?int $value = null;
 
     #[ORM\Column]
+    #[Groups(['treasure:read', 'treasure:write'])]
     private ?int $coolFactor = null;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $plunderedAt;
 
 
-    public function __construct()
+    public function __construct(string $name)
     {
+        $this->name = $name;
         $this->plunderedAt = new \DateTimeImmutable();
     }
 
     /**
      * @return \DateTimeImmutable|null
      */
+    #[Groups(['treasure:read'])]
     public function getPlunderedAt(): ?\DateTimeImmutable
     {
         return $this->plunderedAt;
@@ -73,7 +87,7 @@ class DragonTreasure
     }
 
     #[ORM\Column]
-    private ?bool $isPublished = null;
+    private bool $isPublished = false;
 
     public function getId(): ?int
     {
@@ -85,25 +99,20 @@ class DragonTreasure
         return $this->name;
     }
 
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-   /* public function setDescription(string $description): self
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
-    } */
+    }
 
+    #[SerializedName('description')]
+    #[Groups('treasure:write')]
     public function setTextDescription(string $description): self
     {
         $this->description = nl2br($description);
