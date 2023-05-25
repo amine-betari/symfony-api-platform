@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Repository\DragonTreasureRepository;
 use ApiPlatform\Metadata\ApiResource;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -20,8 +24,10 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 #[ApiResource(
     description: 'A rare and valuable treasure.',
     operations: [
-        new Get(uriTemplate: '/dragon-plunder/{id}'),
-        new GetCollection(uriTemplate: '/dragon-plunder'),
+        new Get(),
+     //   new Get(uriTemplate: '/dragon-plunder/{id}'),
+     //   new GetCollection(uriTemplate: '/dragon-plunder'),
+        new GetCollection(),
         new Post(),
         new Put(),
         new Patch(),
@@ -31,7 +37,8 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     ],
     denormalizationContext: [
         'groups' => ['treasure:write'],
-    ]
+    ],
+    paginationItemsPerPage: 10,
 )]
 class DragonTreasure
 {
@@ -42,10 +49,12 @@ class DragonTreasure
 
     #[ORM\Column(length: 255)]
     #[Groups(['treasure:read', 'treasure:write'])]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups('treasure:read')]
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     private ?string $description = null;
 
     /**
@@ -63,7 +72,7 @@ class DragonTreasure
     private ?\DateTimeImmutable $plunderedAt;
 
 
-    public function __construct(string $name)
+    public function __construct(string $name = null)
     {
         $this->name = $name;
         $this->plunderedAt = new \DateTimeImmutable();
@@ -81,12 +90,14 @@ class DragonTreasure
     /**
      * A human-readable representation of when this treasure was plundered.
      */
+    #[Groups('treasure:read')]
     public function getPlunderedAtAgo(): string
     {
         return Carbon::instance($this->plunderedAt)->diffForHumans();
     }
 
     #[ORM\Column]
+    #[ApiFilter(BooleanFilter::class)]
     private bool $isPublished = false;
 
     public function getId(): ?int
