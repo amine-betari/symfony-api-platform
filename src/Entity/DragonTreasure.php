@@ -10,6 +10,8 @@ use ApiPlatform\Metadata\ApiResource;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+
 
 
 use ApiPlatform\Metadata\Get;
@@ -19,6 +21,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
+use function Symfony\Component\String\u;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
 #[ApiResource(
@@ -62,6 +65,7 @@ class DragonTreasure
      */
     #[ORM\Column]
     #[Groups(['treasure:read', 'treasure:write'])]
+    #[ApiFilter(RangeFilter::class)]
     private ?int $value = null;
 
     #[ORM\Column]
@@ -113,6 +117,12 @@ class DragonTreasure
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    #[Groups(['treasure:read'])]
+    public function getShortDescription(): ?string
+    {
+        return u($this->getDescription())->truncate(40, '...');
     }
 
     public function setDescription(string $description): self
