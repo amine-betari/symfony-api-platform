@@ -35,7 +35,11 @@ class HtmxController extends AbstractController
     #[Route('/news', name: 'news')]
     public function test3(Request $request): Response
     {
+        $faker = \Faker\Factory::create();
+
+        $nom = $faker->name;
+
         $compteur = random_int(1, 10000);
-        return new Response('<p>NEWS</p>'.$compteur);
+        return new Response('<p>NEWS</p>'.$compteur. ' <==Facker===> '. $nom);
     }
 }

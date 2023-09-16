@@ -5,15 +5,13 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Serializer\Filter\PropertyFilter;
 use App\Repository\DragonTreasureRepository;
 use ApiPlatform\Metadata\ApiResource;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
-
-
-
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
@@ -22,6 +20,7 @@ use ApiPlatform\Metadata\Put;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use function Symfony\Component\String\u;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DragonTreasureRepository::class)]
 #[ApiResource(
@@ -35,6 +34,13 @@ use function Symfony\Component\String\u;
         new Put(),
         new Patch(),
     ],
+    formats: [
+        'jsonld',
+        'json',
+        'html',
+        'jsonhal',
+        'csv' => 'text/csv',
+    ],
     normalizationContext: [
         'groups' => ['treasure:read'],
     ],
@@ -43,6 +49,7 @@ use function Symfony\Component\String\u;
     ],
     paginationItemsPerPage: 10,
 )]
+#[ApiFilter(PropertyFilter::class)]
 class DragonTreasure
 {
     #[ORM\Id]
@@ -53,6 +60,8 @@ class DragonTreasure
     #[ORM\Column(length: 255)]
     #[Groups(['treasure:read', 'treasure:write'])]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 50, maxMessage: 'Describe your loot in 50 chars or less')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT)]
