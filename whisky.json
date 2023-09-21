@@ -2,7 +2,8 @@
   "disabled": [],
   "hooks": {
     "pre-commit": [
-      "symfony security:check"
+      "symfony security:check",
+      "git commit --long --dry-run"
     ],
     "pre-push": [
       "symfony security:check"
