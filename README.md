@@ -3,7 +3,7 @@
 Well howdy! This repository holds the code and script
 for the [API Platform 3](https://symfonycasts.com/screencast/api-platform) on SymfonyCasts.
 
-## Setup
+## Setup V2
 
 If you've just downloaded the code, congratulations!!
 
