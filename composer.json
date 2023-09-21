@@ -91,6 +91,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "projektgopher/whisky": "^0.5.1",
         "symfony/debug-bundle": "6.3.*",
         "symfony/maker-bundle": "^1.48",
         "symfony/stopwatch": "6.3.*",

@@ -1,0 +1,11 @@
+{
+  "disabled": [],
+  "hooks": {
+    "pre-commit": [
+      "symfony security:check"
+    ],
+    "pre-push": [
+      "symfony security:check"
+    ]
+  }
+}
