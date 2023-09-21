@@ -11,12 +11,15 @@ use ApiPlatform\Metadata\ApiResource;
 use Carbon\Carbon;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Link;
+
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use function Symfony\Component\String\u;
@@ -53,7 +56,23 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     paginationItemsPerPage: 10,
 )]
+#[ApiResource(
+    uriTemplate: '/users/{user_id}/treasures.{_format}',
+    operations: [new GetCollection()],
+    uriVariables: [
+        'user_id' => new Link(
+            fromProperty: 'dragonTreasures',
+            fromClass: User::class,
+        ),
+    ],
+    normalizationContext: [
+        'groups' => ['treasure:read'],
+    ],
+)]
 #[ApiFilter(PropertyFilter::class)]
+#[ApiFilter(SearchFilter::class, properties: [
+    'owner.username' => 'partial',
+])]
 class DragonTreasure
 {
     #[ORM\Id]
@@ -125,6 +144,7 @@ class DragonTreasure
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['treasure:read', 'treasure:write'])]
     #[Assert\Valid]
+    #[ApiFilter(SearchFilter::class, strategy: 'exact')]
     private ?User $owner = null;
 
     public function getId(): ?int
