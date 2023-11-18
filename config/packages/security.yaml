@@ -16,6 +16,18 @@ security:
         main:
             lazy: true
             provider: app_user_provider
+            json_login:
+                check_path: app_login
+                username_path: email
+                password_path: password
+            logout:
+                path: app_logout
+#            stateless: true if your security system only allows authentication via an API token,
+#                            then you don't need session storage. In that case, you can set a stateless: true flag
+#                            that tells the security system that when a user authenticates,
+#                            not to bother storing the user info in the session.
+            access_token:
+                token_handler: App\Security\ApiTokenHandler
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

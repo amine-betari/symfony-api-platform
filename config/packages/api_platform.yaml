@@ -1,6 +1,22 @@
 api_platform:
-  formats:
-    jsonld: [ 'application/ld+json' ]
-    json:  [ 'application/json' ]
-    html: [ 'text/html' ]
-    jsonhal: [ 'application/hal+json' ]
+    formats:
+        jsonld: [ 'application/ld+json' ]
+        json:  [ 'application/json' ]
+        html: [ 'text/html' ]
+        jsonhal: [ 'application/hal+json' ]
+
+    defaults:
+        stateless: true
+
+    swagger:
+        api_keys:
+            access_token:
+                name: Authorization
+                type: header
+
+#tcp_561096dcdca89a145600c2bedc4db55daeae8669f5089fb253df6561dba45a92
+
+#    enable_docs: false
+#    enable_entrypoint: false
+#    enable_swagger: false
+#    enable_swagger_ui: false

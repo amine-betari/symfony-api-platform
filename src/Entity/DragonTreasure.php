@@ -44,7 +44,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     formats: [
         'jsonld',
         'json',
-        'html',
+#        'html',
         'jsonhal',
         'csv' => 'text/csv',
     ],
